@@ -136,26 +136,26 @@ The model is the multiplier. The domain corpus is the signal.
 
 ---
 
-[^1]: Anthropic, "Effective Context Engineering for AI Agents," 2025-09-29. https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
-[^2]: Eddie Zhou, Arjun Landes, Sneha Chaudhari, Julie Mills (Glean), "Context for AI," 2025-12-10. https://glean.com/blog/context-for-ai
-[^3]: Anthropic, "Introducing Contextual Retrieval," 2024-09-19. https://www.anthropic.com/news/contextual-retrieval
-[^4]: Max Charas, Marc Bruggmann (Spotify Engineering), "Spotify's Background Coding Agent" (Honk series, parts 1–3), 2025-11 / 2025-12. https://engineering.atspotify.com/2025/11/spotifys-background-coding-agent-part-1
-[^5]: Graham Mcbain (Sourcegraph), "Why Code Search at Scale Is Essential When You Grow Beyond One Repository," 2025-12-10. https://sourcegraph.com/blog/why-code-search-at-scale-is-essential-when-you-grow-beyond-one-repository
-[^6]: Eugene Yan, Bryan Bischof, Charles Frye, Hamel Husain, Jason Liu, Shreya Shankar, "What We Learned from a Year of Building with LLMs (Parts I & II)," O'Reilly Radar, 2024. https://applied-llms.org and https://www.oreilly.com/radar/what-we-learned-from-a-year-of-building-with-llms-part-i/
-[^7]: Anthropic, "Building Effective Agents," 2024-12-19. https://www.anthropic.com/engineering/building-effective-agents
-[^8]: Devika Ambekar, "Your LLM Is Only as Good as What It Retrieves," Weaviate Blog, 2026-05-06. https://weaviate.io/blog/retrieval-quality-rag-overview
-[^9]: Dan Jones, Victoria Slocum, "Engram Deep Dive — Memory as Infrastructure," Weaviate Blog, 2026-04-21. https://weaviate.io/blog/engram-deep-dive
-[^10]: Tiago Forte, "The PARA Method: A Universal System for Organizing Digital Information," Forte Labs. https://fortelabs.com/blog/para/
-[^11]: Andy Matuschak, "Evergreen notes" and related notes. https://notes.andymatuschak.org/Evergreen_notes
-[^12]: Stack Overflow Blog, "Retrieval-Augmented Generation: Keeping LLMs Relevant and Current," 2023-10-18. https://stackoverflow.blog/2023/10/18/retrieval-augmented-generation-keeping-llms-relevant-and-current/
-[^13]: Michael Nygard, "Documenting Architecture Decisions," 2011-11-15. https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions
+[^1]: Anthropic, "Effective Context Engineering for AI Agents," 2025-09-29. [https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
+[^2]: Eddie Zhou, Arjun Landes, Sneha Chaudhari, Julie Mills (Glean), "Context for AI," 2025-12-10. [https://glean.com/blog/context-for-ai](https://glean.com/blog/context-for-ai)
+[^3]: Anthropic, "Introducing Contextual Retrieval," 2024-09-19. [https://www.anthropic.com/news/contextual-retrieval](https://www.anthropic.com/news/contextual-retrieval)
+[^4]: Max Charas, Marc Bruggmann (Spotify Engineering), "Spotify's Background Coding Agent" (Honk series, parts 1–3), 2025-11 / 2025-12. [https://engineering.atspotify.com/2025/11/spotifys-background-coding-agent-part-1](https://engineering.atspotify.com/2025/11/spotifys-background-coding-agent-part-1)
+[^5]: Graham Mcbain (Sourcegraph), "Why Code Search at Scale Is Essential When You Grow Beyond One Repository," 2025-12-10. [https://sourcegraph.com/blog/why-code-search-at-scale-is-essential-when-you-grow-beyond-one-repository](https://sourcegraph.com/blog/why-code-search-at-scale-is-essential-when-you-grow-beyond-one-repository)
+[^6]: Eugene Yan, Bryan Bischof, Charles Frye, Hamel Husain, Jason Liu, Shreya Shankar, "What We Learned from a Year of Building with LLMs (Parts I & II)," O'Reilly Radar, 2024. [https://applied-llms.org](https://applied-llms.org) and [https://www.oreilly.com/radar/what-we-learned-from-a-year-of-building-with-llms-part-i/](https://www.oreilly.com/radar/what-we-learned-from-a-year-of-building-with-llms-part-i/)
+[^7]: Anthropic, "Building Effective Agents," 2024-12-19. [https://www.anthropic.com/engineering/building-effective-agents](https://www.anthropic.com/engineering/building-effective-agents)
+[^8]: Devika Ambekar, "Your LLM Is Only as Good as What It Retrieves," Weaviate Blog, 2026-05-06. [https://weaviate.io/blog/retrieval-quality-rag-overview](https://weaviate.io/blog/retrieval-quality-rag-overview)
+[^9]: Dan Jones, Victoria Slocum, "Engram Deep Dive — Memory as Infrastructure," Weaviate Blog, 2026-04-21. [https://weaviate.io/blog/engram-deep-dive](https://weaviate.io/blog/engram-deep-dive)
+[^10]: Tiago Forte, "The PARA Method: A Universal System for Organizing Digital Information," Forte Labs. [https://fortelabs.com/blog/para/](https://fortelabs.com/blog/para/)
+[^11]: Andy Matuschak, "Evergreen notes" and related notes. [https://notes.andymatuschak.org/Evergreen_notes](https://notes.andymatuschak.org/Evergreen_notes)
+[^12]: Stack Overflow Blog, "Retrieval-Augmented Generation: Keeping LLMs Relevant and Current," 2023-10-18. [https://stackoverflow.blog/2023/10/18/retrieval-augmented-generation-keeping-llms-relevant-and-current/](https://stackoverflow.blog/2023/10/18/retrieval-augmented-generation-keeping-llms-relevant-and-current/)
+[^13]: Michael Nygard, "Documenting Architecture Decisions," 2011-11-15. [https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions)
 [^14]: SQLite project, `AGENTS.md` — boundary file declaring what agents may and may not contribute. Surfaced via Simon Willison, simonwillison.net, 2026-05-27.
-[^15]: Ryan Singer / Basecamp, *Shape Up*, "Hill Charts" chapter. https://basecamp.com/shapeup
-[^16]: Anthropic, research- and information-gathering prompting guidance — "track confidence levels … update a hypothesis tree." https://platform.claude.com/docs/en/docs/build-with-claude/prompt-engineering/claude-prompting-best-practices
-[^17]: Holden Karnofsky, "Learning by Writing," Cold Takes. https://www.cold-takes.com/learning-by-writing/
-[^18]: Zettelkasten.de, "Introduction to the Zettelkasten Method" (Principle of Atomicity). https://zettelkasten.de/posts/overview/
-[^19]: Anthropic, "Long-context prompting tips" — "ground responses in quotes." https://platform.claude.com/docs/en/docs/build-with-claude/prompt-engineering/claude-prompting-best-practices
-[^20]: LlamaIndex Blog, "Files Are All You Need" (2026-01-15) and "Is grep all you need? Lexical VS Semantic Search for Agents" (2026-05-26). https://www.llamaindex.ai/blog
-[^21]: AWS, "What Is Retrieval-Augmented Generation?" https://aws.amazon.com/what-is/retrieval-augmented-generation/
-[^22]: Mira Khanna (Glean), "Deep Research — September Drop," 2025-09-03. https://glean.com/blog/deep-research-septdrop-2025
-[^23]: Vicki Boykis, "Architecture for Generations," Increment. https://increment.com/software-architecture/architecture-for-generations/
+[^15]: Ryan Singer / Basecamp, *Shape Up*, "Hill Charts" chapter. [https://basecamp.com/shapeup](https://basecamp.com/shapeup)
+[^16]: Anthropic, research- and information-gathering prompting guidance — "track confidence levels … update a hypothesis tree." [https://platform.claude.com/docs/en/docs/build-with-claude/prompt-engineering/claude-prompting-best-practices](https://platform.claude.com/docs/en/docs/build-with-claude/prompt-engineering/claude-prompting-best-practices)
+[^17]: Holden Karnofsky, "Learning by Writing," Cold Takes. [https://www.cold-takes.com/learning-by-writing/](https://www.cold-takes.com/learning-by-writing/)
+[^18]: Zettelkasten.de, "Introduction to the Zettelkasten Method" (Principle of Atomicity). [https://zettelkasten.de/posts/overview/](https://zettelkasten.de/posts/overview/)
+[^19]: Anthropic, "Long-context prompting tips" — "ground responses in quotes." [https://platform.claude.com/docs/en/docs/build-with-claude/prompt-engineering/claude-prompting-best-practices](https://platform.claude.com/docs/en/docs/build-with-claude/prompt-engineering/claude-prompting-best-practices)
+[^20]: LlamaIndex Blog, "Files Are All You Need" (2026-01-15) and "Is grep all you need? Lexical VS Semantic Search for Agents" (2026-05-26). [https://www.llamaindex.ai/blog](https://www.llamaindex.ai/blog)
+[^21]: AWS, "What Is Retrieval-Augmented Generation?" [https://aws.amazon.com/what-is/retrieval-augmented-generation/](https://aws.amazon.com/what-is/retrieval-augmented-generation/)
+[^22]: Mira Khanna (Glean), "Deep Research — September Drop," 2025-09-03. [https://glean.com/blog/deep-research-septdrop-2025](https://glean.com/blog/deep-research-septdrop-2025)
+[^23]: Vicki Boykis, "Architecture for Generations," Increment. [https://increment.com/software-architecture/architecture-for-generations/](https://increment.com/software-architecture/architecture-for-generations/)
