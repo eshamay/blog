@@ -5,9 +5,6 @@ date: 2026-05-28
 description: A curated, multi-source domain corpus predicts AI project success more reliably than the model, the prompt or the harness. What it contains, what makes it good, and why it compounds.
 ---
 
-**Author**: Eric Shamay<br>
-**Published**: 05/28/2026
-
 Across every kind of project I've run with AI agents — coding, analysis, planning, writing, ideation — one thing predicts success more reliably than the model, the prompt, or the harness: whether a deep, curated *domain corpus* existed before the work started. Not a rules file. Not a CLAUDE.md. Not a `.cursorrules`. A *corpus*: a multi-source body of project knowledge assembled from every place the domain actually lives, and treated as a first-class engineering artifact in its own right. Teams that build the corpus first ship; teams that try to reason from raw repos and parametric memory churn. But *curated* has to mean *verified*, not merely *collected*: an unchecked corpus is worse than none, because agents treat its pages as ground truth and every error in it propagates. This piece argues why, what such a corpus looks like, what makes one good, how corpora fail, and why the corpus pays back compounding returns long after the original question is answered.
 
 ## What this doc is — and is not — about
