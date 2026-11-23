@@ -1,0 +1,22 @@
+title: Eric Shamay's Blog
+description: Writing on AI workflow systems and agent-driven software change.
+author: Eric Shamay
+url: https://eshamay.github.io
+baseurl: /blog
+
+theme: minima
+permalink: /:year/:month/:day/:title/
+date_format: "%b %-d, %Y"
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+
+header_pages:
+  - archive.md
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - vendor

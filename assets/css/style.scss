@@ -1,0 +1,25 @@
+---
+---
+
+@import "minima";
+
+.wrapper {
+  max-width: 860px;
+}
+
+.post-content {
+  line-height: 1.7;
+
+  img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 1.5em auto;
+  }
+
+  table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}
