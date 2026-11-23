@@ -11,11 +11,11 @@ Across every kind of project I've run with AI agents — coding, analysis, plann
 
 This doc is **not** about lightweight instruction files for AI tools. `CLAUDE.md`, `AGENTS.md`, `.cursorrules`, conventions files — those are configuration. They tell an agent how to behave on a one-shot run. They are useful, but they are not the topic here.
 
-This doc is about the **domain corpus** that sits underneath that configuration: the curated, multi-source, project-scoped body of knowledge an AI agent reads to do real work on a complex domain. A real corpus pulls from design docs, RFCs, Slack threads, Quip pages, Google Docs, code-search results, BOM dumps, vendor reference, meeting transcripts, peer-product writeups, glossaries, decision logs, and status journals. It is not a side effect of the work — it is the substrate that makes the work possible.
+This doc is about the **domain corpus** that sits underneath that configuration: the curated, multi-source, project-scoped body of knowledge an AI agent reads to do real work on a complex domain. A real corpus pulls from design docs, RFCs, Slack threads, Google Docs, code-search results, BOM dumps, vendor reference, meeting transcripts, peer-product writeups, glossaries, decision logs, and status journals. It is not a side effect of the work — it is the substrate that makes the work possible.
 
 Anthropic frames this exact discipline as context engineering: *"finding the smallest possible set of high-signal tokens that maximize the likelihood of some desired outcome."*[^1] Glean, building enterprise AI in production, puts it more bluntly: *"managing context well is now foundational to whether agents succeed in the enterprise."*[^2] The prompt is one-shot. The corpus is the project.
 
-What follows draws on months of building and maintaining corpora since this piece was first written, not only on the literature. Most corpora are built in a burst around a single question and then go quiet; the few that stay alive have an owner who keeps putting new questions to them. Reuse shows up as new deliverables more than as repeat queries. And the work that decides a corpus's value is verification and upkeep, not collection.
+What follows draws on a year of building and maintaining corpora since this piece was first written, not only on the literature. Most corpora are built in a burst around a single question and then go quiet; the few that stay alive have an owner who keeps putting new questions to them. Reuse shows up as new deliverables more than as repeat queries. And the work that decides a corpus's value is verification and upkeep, not collection.
 
 ## Why a deep corpus beats every other lever
 
