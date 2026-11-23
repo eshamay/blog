@@ -25,7 +25,7 @@ Anthropic's Contextual Retrieval study reduced top-20 retrieval failure rates by
 
 The failure mode without a wiki is consistent. Models don't admit uncertainty when context is shallow — they confidently extrapolate, producing what Weaviate calls *"higher-fluency hallucinations."*[^8] Long context windows decay past the *"lost in the middle"* threshold described in Weaviate's Engram research[^9], so even very large windows don't substitute for curated structure. Spotify identifies the most damaging failure as *"a PR that passes CI but is functionally incorrect"*[^4] — the signature of an agent working without enough domain context to know what *correct* even means.
 
-The published numbers come from large systems, but the same pattern shows up at small scale. Asked what checks run when a file is published, a chat thread produced eight answers; checked against the source code, six were wrong or incomplete. A wiki that ranked the code first and recorded the thread as claims to verify got the answer right and logged the disagreement. A cost method re-run on a second case (below) tells the same story: in each, the wiki mattered less for what it held than for letting someone check it.
+The published numbers come from large systems, but the same pattern shows up at small scale. Asked what checks run when a file is published, a chat thread produced eight answers; checked against the source code, six were wrong or incomplete. A wiki that ranked the code first and recorded the thread as claims to verify got the answer right and logged the disagreement. Here the wiki mattered less for what it held than for letting someone check it.
 
 The model is the multiplier; the wiki is the signal. A bigger multiplier on shallow input still produces shallow output.
 
