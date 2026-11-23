@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Why a Curated KB Is the Highest-Leverage AI Prep You'll Ever Do"
-date: 2026-05-28
+date: 2026-11-08
 description: A curated, multi-source domain corpus predicts AI project success more reliably than the model, the prompt or the harness. What it contains, what makes it good, and why it compounds.
 ---
 
@@ -15,7 +15,7 @@ This doc is about the **domain corpus** that sits underneath that configuration:
 
 Anthropic frames this exact discipline as context engineering: *"finding the smallest possible set of high-signal tokens that maximize the likelihood of some desired outcome."*[^1] Glean, building enterprise AI in production, puts it more bluntly: *"managing context well is now foundational to whether agents succeed in the enterprise."*[^2] The prompt is one-shot. The corpus is the project.
 
-What follows draws on a year of building and maintaining corpora since this piece was first written, not only on the literature. Most corpora are built in a burst around a single question and then go quiet; the few that stay alive have an owner who keeps putting new questions to them. Reuse shows up as new deliverables more than as repeat queries. And the work that decides a corpus's value is verification and upkeep, not collection.
+What follows draws on a year of building and maintaining corpora, not only on the literature. Most corpora are built in a burst around a single question and then go quiet; the few that stay alive have an owner who keeps putting new questions to them. Reuse shows up as new deliverables more than as repeat queries. And the work that decides a corpus's value is verification and upkeep, not collection.
 
 ## Why a deep corpus beats every other lever
 
