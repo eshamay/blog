@@ -55,7 +55,7 @@ Prompt injection hides instructions in untrusted content. That's text from outsi
 
 First, **fail closed**: treat an error, a timeout or an unknown state as a refusal. A control that opens when broken fails exactly when you need it.
 
-Second, **record whether each control is enforcing or merely configured**. A configured control exists in configuration. An enforcing one is deployed, working, and has refused a deliberate test since its configuration last changed. An untested control gives false comfort. One review of existing systems found most guardrails were prompts or conventions rather than code, and announcements described more than the code wired.
+Second, **record whether each control is enforcing or merely configured**. A configured control exists in configuration. An enforcing one is deployed, working, and has refused a deliberate test since its configuration last changed. An untested control gives false comfort. One review of existing systems found that most guardrails were prompts or conventions rather than code, and that announcements often promised more than the code actually did.
 
 Third, **bind approvals and effects to content rather than names**. A hash is a fingerprint of content that changes exactly when the content does. A plan hash ties an approval to one version of the plan, so any edit voids it. A name can be reused, collide or stay fixed as content changes. A content key, built from an effect's target and intended action, lets a retry recognize an applied effect and skip it.
 
