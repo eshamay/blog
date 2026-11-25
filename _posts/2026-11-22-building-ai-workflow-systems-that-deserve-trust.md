@@ -11,7 +11,7 @@ Many teams are building AI workflow systems at once. An AI workflow system is th
 
 The scope is planned software change. Such work begins as a request and moves through planning, then execution, then review. It ends in a pull request, a proposed change that is reviewed before it merges into shared code. A person accepts or rejects it, or, for the lowest-risk work, a rule the organization set in advance decides. Conversational assistants fall outside, because a conversation ends in an answer rather than a reviewed change. Editor suggestions fall outside because they only propose lines as a person types. Agents that operate production systems are excluded because they act on live services instead of proposing a change.
 
-The guidance explains the failure each rule prevents, and each term is defined where it first appears. Every reader should begin with sections 0 and 1. A newcomer gains the most by reading on in order through section 12, while a builder can take sections 4 to 12 one component at a time. A reader who first wants to know how firm the ground is can go from section 1 straight to section 13. The vocabulary begins with the smallest piece, a single agent.
+The guidance explains the failure each rule prevents, and each term is defined where it first appears. Every reader should begin with sections 0 and 1. A newcomer gains the most by reading on in order through section 12, while a builder can take sections 4 to 11 one component at a time. A reader who first wants to know how firm the ground is can go from section 1 straight to section 13. The vocabulary begins with the smallest piece, a single agent.
 
 ## 1. From agent loops to workflow systems
 
@@ -27,15 +27,15 @@ Agents run unattended, with nobody watching, and many at once. Reviewers do not 
 
 A skilled contractor still works from drawings, under a permit and with an inspector, because skill does not replace process. A workflow is that process applied to an agent's work. A workflow system keeps it intact when nobody is watching. It consists of the runtime that runs the work, the controls that limit it and the records of what happened.
 
-Two kinds of control carry the most weight. The first is deterministic enforcement, rules that code applies whatever the model decides. Its usual tool is a hook, code the harness runs at a fixed point, such as before a shell command, that can allow, question or refuse the action. A rule kept only in a prompt can be outweighed or lost to compaction, while a hook applies on every call it matches once it is registered, set to block when it fails and tested. The second is the human gate, a point where a person decides before work proceeds. Human gates belong at judgment calls, the decisions that need a person's grasp of purpose or risk. Placed at every step, they use up the attention those decisions need, and people can come to approve without reading. Section 2 states where each control belongs.
+Two kinds of control carry the most weight. The first is deterministic enforcement, rules that code applies whatever the model decides. Its usual tool is a hook, code the harness runs at a fixed point, such as before a shell command, that can allow, question or refuse the action. A rule kept only in a prompt can be outweighed or lost to compaction, while a hook applies on every call it matches once it is registered, set to block when it fails where the harness allows, and tested. The second is the human gate, a point where a person decides before work proceeds. Human gates belong at judgment calls, the decisions that need a person's grasp of purpose or risk. Placed at every step, they use up the attention those decisions need, and people can come to approve without reading. Section 2 states where each control belongs.
 
-**Figure 1.1. From the scope of the paper to the single agent and the workflow system built around it.**
+**Figure 1.1. From the scope of the paper to the single agent and the workflow system built around it**
 
 ![Figure 1.1. From agent loop to workflow system: planned software change is in scope, a single agent is a model and a harness working in a loop, and a workflow system wraps that agent with a runtime, controls and records]({{ "/assets/img/figure-1-1-agent-loop-to-workflow-system.png" | relative_url }})
 
 ## 2. Eight axioms and three corollaries
 
-Section 1 ended by asking where each control belongs. The eight axioms below answer it and set the paper's other premises. An axiom here is a working premise applied without re-argument, and each records a failure costly to learn twice.
+Section 1 left open where each control belongs. The eight axioms below answer it and set the paper's other premises. An axiom here is a working premise applied without re-argument, and each records a failure costly to learn twice.
 
 **Axiom 1: enforce must-not-fail rules in code, and keep prompts for judgment.** A rule in the prompt is only advice, because the model weighs it against everything else in its context. Compaction can drop it, and injected text can argue the model out of it. Must-not-fail rules therefore belong in code that applies whatever the model decides. A hook refuses a dangerous action it recognizes before it runs, and a deny rule refuses a whole class of action. Branch protection, a setting on the code host, keeps changes off a branch until required checks pass. Managed policy is organization settings that outrank any repository. Section 7 applies this.
 
@@ -56,6 +56,7 @@ Section 1 ended by asking where each control belongs. The eight axioms below ans
 Prompt injection hides instructions in untrusted content, text from outside the operator, the person or team who runs the agent. An agent cannot reliably tell such text from real instructions and may obey it. Approval alone does not contain it, because a tricked agent still acts on everything it can reach. Containment, limiting that reach, is what holds. Section 7 applies it.
 
 ### Corollaries
+
 Three corollaries turn the axioms into habits. The first is to **fail closed**, treating an error, a timeout or an unknown state as a refusal. A control that opens when broken fails exactly when it is needed.
 
 The second corollary is to **record whether each control is enforcing or merely configured**. A configured control exists in configuration. An enforcing control is deployed and working, and it has refused a deliberate test since its configuration last changed. A control can be present and still not work, and an untested one gives false comfort. In one review of existing systems, most guardrails turned out to be prompts or conventions rather than code, and announcements described more than the code wired.
@@ -76,13 +77,13 @@ Triage decides whether a task suits an agent and how much process it deserves. S
 
 Execution runs one loop per unit of work, the piece of the plan one session carries to a change. Each unit has an isolated workspace, its own checkout and branch, so units never overwrite each other's files, and conflicts surface at merge instead. Verification runs deterministic checks, then fresh-context reviewers who start without the author's assumptions, and a fixed rule turns their findings into a verdict. The human gate places a person wherever the risk tier, a class computed from what a change touches, calls for one. Learning changes the system so a failure is less likely to repeat. The cheapest checks come first, so a person sees only work that has already passed them.
 
-The control plane is a set of rules that watches every stage instead of belonging to one, because a dangerous action can happen anywhere. It is enforced in code and must be configured to fail closed, since in at least one widely used harness, hooks fail open on a timeout or error by default. Its layers run from prevention to recovery, as section 7 develops, and each is separate: the sandbox and egress control prevent, approvals decide, hooks enforce and monitoring only detects. Guards, code that blocks a dangerous action as it is attempted, belong to it.
+The control plane is a set of rules that watches every stage instead of belonging to one, because a dangerous action can happen anywhere. It is enforced in code and must be configured to fail closed, since in at least one widely used harness, hooks fail open on a timeout or error by default. Its layers run from prevention to recovery, as section 7 develops, and each is separate: the sandbox and outbound network limits prevent, approvals decide, hooks enforce and monitoring only detects. Guards, code that blocks a dangerous action as it is attempted, belong to it.
 
 Saved state keeps what must survive a crash outside the conversation transcript, which compaction erodes, in structured, checkpointed records, not in notes or labels alone, so work resumes instead of restarting. The feedback layer feeds events, evaluations, and outcome records back into checks.
 
 The supervisor starts sessions and sequences units, and it keeps spend counts across resumes so a restart does not reset them. By default it runs one agent on one unit at a time. A graph supervisor, which picks the next session at run time, is harder to predict and resume, so it waits for a clear need.
 
-Separation of duties means no party approves its own work, so the agent that does the work never gives the final check, acceptance or merge, and at the high tier a second person approves as well. This gives structure to the axiom that an author cannot weaken its own checks, as section 9 shows.
+Separation of duties means no party approves its own work, so the agent that does the work never gives the final check, acceptance or merge, and at the high risk tier of section 9 a second person approves as well. This gives structure to the axiom that an author cannot weaken its own checks, as section 9 shows.
 
 Each component carries one of three statuses. A recommended default is adopted from the start, because the failure it prevents is serious and its cost low. An earn-it component works but is costly, so a team adds it when its own experience shows the need. An open position has unsettled value, so a team tries it as an experiment that stays easy to remove. Together the statuses form the confidence ladder of section 12.
 
@@ -96,7 +97,7 @@ The first question is **whether to delegate**. Work suits an agent best when its
 
 The second question is **how much process to apply**. Risk should be judged by the property a change touches, such as permissions, not by its line count. Ceremony, the overhead of specifying and reviewing, should stay light on small changes, where it costs more than it returns.
 
-The light path serves small, low-risk work such as read-only reports and documentation. Its spec is a goal plus a done condition, the observable sign of completion, and the plan stays implicit. Verification is the automated checks plus one reviewer in a fresh context, and acceptance follows a rule set in advance.
+The light path serves small, low-risk work such as read-only reports and documentation. Its spec is a goal plus a done condition, the observable sign of completion, and the plan stays implicit. Verification is the automated checks plus one reviewer in a fresh context, and acceptance can follow a rule set in advance (section 9).
 
 The full path serves work that changes data, schemas or behavior others rely on. Its spec is a contract that a machine and a reviewer can both check, written before any plan so the plan answers it. It states success criteria, the checkable statements a finished change must satisfy. It names failure modes, so verification knows what to probe. It declares assumptions, so a reviewer can challenge them. It records blocking questions, whose answers the agent would otherwise invent.
 
@@ -134,7 +135,7 @@ Other questions climb a decision ladder, an open position, one rung at a time, a
 
 **Figure 5.1. The decision ladder**
 
-![Figure 5.1. The decision ladder: a question that is not a missing requirement or a risk to data climbs from the projects own records, to an independent panel, to the safest reversible option, and every outcome becomes a decision record]({{ "/assets/img/figure-5-1-the-decision-ladder.png" | relative_url }})
+![Figure 5.1. The decision ladder: a question that is not a missing requirement or a risk to data climbs from the project's own records, to an independent panel, to the safest reversible option, and every outcome becomes a decision record]({{ "/assets/img/figure-5-1-the-decision-ladder.png" | relative_url }})
 
 The first rung consults the project's own records, meaning the spec, earlier decisions, the conventions, and the code. A confident answer is recorded and work continues.
 
@@ -174,7 +175,7 @@ An agent in its own workspace still needs limits it cannot talk its way past, th
 
 ## 7. Control and containment
 
-This section, like section 10, steps outside the stage order to the control plane over every stage. A guard enforced in code is a circuit breaker that trips whether or not anyone reads the warning label, and a prompt rule is only the label. Enforcement stops a known-bad action as it is attempted. Containment limits what an agent can reach, so a tricked agent can do less harm. Table 7.1 places both among five layers of defense.
+This section steps outside the stage order to the control plane over every stage. A guard enforced in code is a circuit breaker that trips whether or not anyone reads the warning label, and a prompt rule is only the label. Enforcement stops a known-bad action as it is attempted. Containment limits what an agent can reach, so a tricked agent can do less harm. Table 7.1 places both among five layers of defense.
 
 **Table 7.1. Layers of defense**
 
@@ -216,11 +217,11 @@ An oracle, whatever decides that work is correct, means something only if it wou
 
 A known-bad copy is a copy of the change with one behavior the spec cares about removed. Tests that still pass on it are blind to that behavior. Known-bad copies target the behaviors the spec values most and the most common defects. A separate session without access to the code writes a test that fails on the copy, so the test cannot adapt to the code. Without a meaningful known-bad copy, a person reviews the tests.
 
-Reviewers start in a fresh context so they do not inherit the author's assumptions. A reviewer asked for problems will nearly always report some, so findings carry severities and the loop has a stop rule, or review never ends. No single reviewer catches everything, so the default pairs deterministic checks with one strong reviewer. No study comparing one strong reviewer with several lenses was found, and on one independent preprint benchmark of general code review the best system caught only about a third of known defects, while no independent precision figure was found for any commercial reviewer. Lenses, reviewers focused on one concern, are added only where recorded misses demand them. Code, not a model, collects every reviewer's findings for the verdict function below.
+Reviewers start in a fresh context so they do not inherit the author's assumptions. A reviewer asked for problems will nearly always report some, so findings carry severities and the loop has a stop rule, or review never ends. No single reviewer catches everything, so the default pairs deterministic checks with one strong reviewer. No study comparing one strong reviewer with several lenses, reviewers focused on one concern, was found, and on one independent preprint benchmark of general code review the best system caught only about a third of known defects, while no independent precision figure was found for any commercial reviewer. Lenses, reviewers focused on one concern, are added only where recorded misses demand them. Code, not a model, collects every reviewer's findings for the verdict function below.
 
 A team should not rely on one model judge, a model that grades work. Such judges tend to favor longer answers and answers in certain prompt positions, and can accept plausible but wrong claims. In general judging tasks, a panel of smaller models from different makers has judged better than one large model, because their habits differ. The team should check the judge against human verdicts on a sample and let it say it cannot tell rather than guess. In one code-review benchmark, only one of three model judges was checked against people, and it matched the human majority on about 72% of 60 comments.
 
-A verdict function maps findings to a verdict by fixed rule rather than vote, so no argument can change it. A blocker is a defect that must stop the change and can never be excused. A major finding is a real problem only the owner may accept. A minor finding is worth recording but does not stop the change.
+A verdict function maps findings to a verdict by fixed rule rather than vote, so no argument can change it. A blocker is a defect that must stop the change and can never be excused. A major finding is a real problem only the owner may accept, by waiving it. A minor finding is worth recording but does not stop the change.
 
 **Table 8.1. The verdict function**
 
@@ -263,7 +264,7 @@ The explainer opens with a summary of the change. It then gathers decision recor
 
 The requester states the need. The author is the agent plus the engineer who dispatched it. The owner, usually that engineer, is accountable. The second approver has no part in the work. The merger is neither author nor requester, or is an explicit low-tier policy.
 
-Nobody approves a change in which they hold a stake, so the agent never approves or merges its own work. The requester confirms that the criteria capture the need but never approves the change. At the medium tier, computed checks separate the agent's doing from the owner's accepting. At the high tier the owner counts as author, so a second approver is needed.
+Nobody approves a change in which they hold a stake, so the agent never approves or merges its own work. The requester confirms that the criteria capture the need but never approves the change. At the medium tier, computed checks separate the agent's doing from the owner's accepting. Because the owner is usually part of the author, the high tier adds a second approver.
 
 Control what reaches review, not only review speed. A diff size cap keeps changes readable, and small batches resist the instability of fast change. Reviewer capacity caps concurrent work. Every contribution should disclose agent use and be verified by a person. Very large changes without design discussion should be declined, and open changes per contributor capped.
 
@@ -287,7 +288,7 @@ Resume should fail loudly, as section 2's sixth axiom requires. On unrecognized 
 
 Stored state is also a trust boundary. A later session with different trust will act on whatever a checkpoint, the saved state resume reads, contains. A checkpoint must therefore never hold an authority token, a credential or approval that grants power the reader was never given. Traces, journals and evaluation sets can hold personal data and secrets. Retention rules limit how long each is kept. Access rules limit who reads it. Redaction strips what is sensitive. A secret scan runs before another session reads them.
 
-Cost belongs with state. Helpers starting helpers can multiply a small plan and exhaust a budget within minutes. In one public issue report against an agent tool, five planned helpers became more than 360, over seventy times the plan, and drained a five-hour usage quota from about 3% to 100% within minutes before the user stopped them by hand. Limits on how deeply sessions nest and how many one session starts come first. Spend accounting that survives resume and counts the sessions a session starts comes second, since a reset count resets the protection. A cap can overshoot by one response plus any helpers still running, and in one agent toolkit budget and turn limits default to none, so set both, leave headroom, and count every billed token type, cache reads included. In one public report a long run used 819.5 million cache-read tokens against 11.3 million output tokens, and the user suspected its caps never fired because the meter counted output only. The supervisor of section 3 enforces these defaults. A complete refusing cap, an open position in section 13, goes further. It blocks new work at a safe point between effects, because an unread warning stops nothing. It warns early and labels estimates as advisory, so the owner raises the limit deliberately. That runaway chain of helpers then meets a machine-readable refusal naming the limit. The system stops gracefully rather than crashing, and the owner sees the spend and the chain behind it.
+Cost belongs with state. Helpers starting helpers can multiply a small plan and exhaust a budget within minutes. In one public issue report against an agent tool, five planned helpers became more than 360, over seventy times the plan, and drained a five-hour usage quota from about 3% to 100% within minutes before the user stopped them by hand. Limits on how deeply sessions nest and how many one session starts come first. Spend accounting that survives resume and counts the sessions a session starts comes second, since a reset count resets the protection. A cap can overshoot by one response plus any helpers still running, and in one agent toolkit budget and turn limits default to none, so set both, leave headroom, and count every billed token type, cache reads included. In one public report a long run used 819.5 million cache-read tokens against 11.3 million output tokens, and the user suspected its caps never fired because the meter counted output only. The supervisor of section 3 enforces these defaults. A complete refusing cap, an open position in section 12, goes further. It blocks new work at a safe point between effects, because an unread warning stops nothing. It warns early and labels estimates as advisory, so the owner raises the limit deliberately. That runaway chain of helpers then meets a machine-readable refusal naming the limit. The system stops gracefully rather than crashing, and the owner sees the spend and the chain behind it.
 
 These records of what happened are also what learning builds on.
 
@@ -315,7 +316,7 @@ A recurring finding becomes a deterministic check on every change touching that 
 
 The harness is itself code under change. Its prompts, hooks and configuration should be versioned so a change can be reviewed and rolled back, and a change to them should pass the team's private tasks before it reaches everyone.
 
-Controls may also need to leave. One vendor advises deleting a hook that encodes only a preference and dropping advice newer models no longer need. A guard against a weakness newer models may lack could be tested with private tasks that invite the blocked action, and if the model no longer attempts it, a person may remove that long-quiet guard. This pruning test is untried, an open position in section 13.
+Controls may also need to leave. One vendor advises deleting a hook that encodes only a preference and dropping advice newer models no longer need. A guard against a weakness newer models may lack could be tested with private tasks that invite the blocked action, and if the model no longer attempts it, a person may remove that long-quiet guard. This pruning test is untried, an open position in section 12.
 
 Guards on destructive actions, containment and credential scope are exempt, because a guard against rare catastrophe is meant to be quiet. They change only with the threat model, the account of what they defend against.
 
@@ -331,7 +332,7 @@ Sections 4 to 11 each built one component, and Figure 12.1 joins them into the r
 
 Earlier sections explain each stage. A rejected change returns through a capped fix round to execution. An accepted change meets the human gate for its risk tier, and a person or an explicit policy, never the author, merges it. The dashed line on the right carries learning back to the checks, because recurring findings become new checks.
 
-These components fall into the three statuses of section 3. Unattended safety comes from guardrails rather than from parallelism. One builder of an unattended system said as much, though most of that system's limits were instructions to the model, and a guardrail kept only in a prompt is weaker than one in code. The recommended defaults are those guardrails, the axioms of section 2 put into practice, and a team should adopt them now.
+These components fall into the three statuses of section 3, which form the confidence ladder. Unattended safety comes from guardrails rather than from parallelism. One builder of an unattended system said as much, though most of that system's limits were instructions to the model, and a guardrail kept only in a prompt is weaker than one in code. The recommended defaults are those guardrails, the axioms of section 2 put into practice, and a team should adopt them now.
 
 The earn-it components add scale or structure, and a team adopts each once its own runs show it pays. A graph supervisor and many parallel sessions add scale. Stacked sequencing and the write guard of the plan lock add structure. Several review lenses and a design panel, a group that drafts competing plans for a chooser to pick from or merge, deepen scrutiny.
 
@@ -381,4 +382,3 @@ Each component that must earn its place has a test. Several review lenses, each 
 Among the open positions, the decision ladder should be revised if flagged decisions are reversed so often that asking would have been cheaper. A refusing cap, which blocks new work at its spending limit rather than only warning, is confirmed when it stops a runaway and revised if it refuses legitimate work too often. The deferral register earns its keep if deferred items return rather than vanish. Traceability without a tracker earns its keep if each change still leads back to its request. Self-repair should grow beyond simple retries only where its repairs hold. Pruning quiet controls is confirmed if retired guards stay unneeded and revised if their failures return. Acceptance by policy remains an organizational choice, informed by incident and revert rates in each risk tier.
 
 A team's own records over many runs decide parallel sessions and risk tiers, and parallel sessions also wait on review capacity. How to set and audit risk tiers, and when to prune a control that no longer earns its cost, remain open. Lenses, the write guard, the ladder and caps matter too rarely to judge without many runs. An open component should be adopted deliberately, measured, and kept removable. An open position is not a weak one. It marks where a builder should measure first.
-
