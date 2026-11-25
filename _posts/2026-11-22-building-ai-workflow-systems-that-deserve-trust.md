@@ -228,12 +228,14 @@ A verdict function maps findings to a verdict by fixed rule rather than vote, so
 |---|---|
 | Any blocker | Reject |
 | An unwaived major finding | Reject |
+| A waived major finding | Accept, filing follow-ups under an owner |
 | Only minor findings | Accept, filing follow-ups under an owner |
 | No findings | Accept |
 | A finding of unknown severity | Treat as major |
+| A malformed finding | Treat as major, never waivable |
 | An internal error in a reviewer or check | Inconclusive |
 
-Unknown severity counts as major because uncertainty must not lower the bar. An internal error is retried, then escalated, and never accepted, because a crash counts as failure. An accept verdict means the change is ready for the human gate of section 9, not that it merges.
+Unknown severity counts as major because uncertainty must not lower the bar. An internal error is retried, then escalated, and never accepted, because a crash counts as failure. An accept verdict means the change is ready for the human gate of section 9, not that it merges. It must carry its evidence: the tests run and their result, an audit of the diff, the commit reviewed, a recheck of each fix, and the lint output.
 
 The change under review may contain text meant to persuade its reviewer. In one study, text planted in pull request metadata misled automated review pipelines in 32 of 33 known vulnerability cases. A model reviewer may therefore make a verdict stricter but never override a failed deterministic check or excuse an edit to a protected area. A waiver, the owner's recorded acceptance of one major finding for one change, is counted to keep the cost of attention visible.
 
@@ -353,7 +355,7 @@ Most recurring failures, or anti-patterns, are controls that read as stronger th
 | A destructive-work freeze only in a prompt | Enforce in code | The list of guards |
 | Approval fatigue from per-action prompts | Attention is scarce | Approval rate |
 | The author editing tests it did not write | Independent checks | Test changes, failing twins |
-| A crash or warning-only cap treated as safe | Fail closed | Internal error count |
+| A crash or warning-only cap treated as safe | Fail closed | Internal error count, spend past each cap |
 | Summary handoffs, thick always-loaded instructions | Context is a budget | Context cost per session |
 | Fan-out without independent units | Start simple | Conflict rate, review queue |
 | A resume that starts fresh or replays effects | Loud, idempotent resume | Intents with no done record |
