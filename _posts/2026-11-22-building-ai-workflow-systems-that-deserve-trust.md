@@ -71,7 +71,7 @@ This section shows the parts that make the axioms hold. A request, whether an is
 
 **Figure 3.1. The anatomy of a workflow system**
 
-![Figure 3.1. The anatomy of a workflow system: a request passes through seven stages under a control plane, with the state spine, feedback spine and supervisor beneath]({{ "/assets/img/figure-3-1-anatomy-of-a-workflow-system.png" | relative_url }})
+![Figure 3.1. The anatomy of a workflow system: a request passes through seven stages under a control plane, with saved state, a feedback layer and a supervisor beneath]({{ "/assets/img/figure-3-1-anatomy-of-a-workflow-system.png" | relative_url }})
 
 Triage decides whether a task suits an agent and how much process it deserves. Specification turns intent into a spec, a written statement of what to build and what done means. Planning checks that the spec suffices and puts the plan to its owner, the person accountable for the work. After approval, the plan changes only through recorded new versions.
 
@@ -328,7 +328,7 @@ Sections 4 to 11 each built one component, and Figure 12.1 joins them into the r
 
 **Figure 12.1. The reference process**
 
-![Figure 12.1. The reference process: a request moves from triage through specification, planning, execution, verification and the human gate to merge and learning, with exits for unsuited work, invented requirements and stuck loops, and loops for rejection and learning]({{ "/assets/img/figure-12-1-the-reference-process.png" | relative_url }})
+![Figure 12.1. The reference process: a request moves from triage through specification, planning, execution, verification and the human gate to merge and learning, with exits for unsuited work, invented requirements and stuck review-fix loops, a light path that rejoins at execution, and loops for rejection and learning]({{ "/assets/img/figure-12-1-the-reference-process.png" | relative_url }})
 
 Earlier sections explain each stage. A rejected change returns through a capped fix round to execution. An accepted change meets the human gate for its risk tier, and a person or an explicit policy, never the author, merges it. The dashed line on the right carries learning back to the checks, because recurring findings become new checks.
 
