@@ -58,7 +58,7 @@ Prompt injection hides instructions in untrusted content, text from outside the 
 ### Corollaries
 Three corollaries turn the axioms into habits. The first is to **fail closed**, treating an error, a timeout or an unknown state as a refusal. A control that opens when broken fails exactly when it is needed.
 
-The second corollary is to **record whether each control is armed or merely implemented**. An implemented control exists in configuration. An armed control is deployed and enforcing, and it has refused a deliberate test since its configuration last changed. A control can be present and still not work, and an untested one gives false comfort. In many existing systems, guardrails turn out to be prompts or conventions rather than code, and announcements often describe more than the code wires.
+The second corollary is to **record whether each control is enforcing or merely configured**. A configured control exists in configuration. An enforcing control is deployed and working, and it has refused a deliberate test since its configuration last changed. A control can be present and still not work, and an untested one gives false comfort. In many existing systems, guardrails turn out to be prompts or conventions rather than code, and announcements often describe more than the code wires.
 
 The third corollary is to **bind approvals and effects to content rather than names**. A hash is a fingerprint computed from content, and it changes exactly when the content does. A plan hash ties an approval to one version of the plan, so any edit voids it. A name can be reused, collide or stay fixed while content changes. A content key, built from an effect's target and intended action, lets a retry recognize an effect already applied and skip it.
 
@@ -66,7 +66,7 @@ With the premises and habits set, section 3 draws the map on which they are appl
 
 ## 3. The anatomy of a workflow system
 
-This section shows the parts that make the axioms hold. A request, whether an issue, a chat message or a larger body of work, enters a fixed pipeline of seven stages. A control plane sits over the stages, and two durable spines and a supervisor run beneath them, as Figure 3.1 shows.
+This section shows the parts that make the axioms hold. A request, whether an issue, a chat message or a larger body of work, enters a fixed pipeline of seven stages. A control plane sits over the stages, and two durable layers, saved state and feedback, and a supervisor run beneath them, as Figure 3.1 shows.
 
 **Figure 3.1. The anatomy of a workflow system**
 
@@ -78,15 +78,15 @@ Execution runs one loop per unit of work, the piece of the plan one session carr
 
 The control plane is a set of rules that watches every stage instead of belonging to one, because a dangerous action can happen anywhere. It is enforced in code and must be configured to fail closed, since many hooks fail open on a timeout or error by default. Its layers run from prevention to recovery, as section 7 develops, and each is separate: the sandbox and egress control prevent, approvals decide, hooks enforce and monitoring only detects. Guards, code that blocks a dangerous action as it is attempted, belong to it.
 
-The state spine keeps what must survive a crash outside the conversation transcript, which compaction erodes, in structured, checkpointed records, not in notes or labels alone, so work resumes instead of restarting. The feedback spine feeds events, evaluations, and outcome records back into checks.
+Saved state keeps what must survive a crash outside the conversation transcript, which compaction erodes, in structured, checkpointed records, not in notes or labels alone, so work resumes instead of restarting. The feedback layer feeds events, evaluations, and outcome records back into checks.
 
 The supervisor starts sessions and sequences units, and it keeps spend counts across resumes so a restart does not reset them. By default it runs one agent on one unit at a time. A graph supervisor, which picks the next session at run time, is harder to predict and resume, so it waits for a clear need.
 
 Separation of duties means no party approves its own work, so the agent that does the work never gives the final check, acceptance or merge, and at the high tier a second person approves as well. This gives structure to the axiom that an author cannot weaken its own checks, as section 9 shows.
 
-Each component carries one of three standings. A recommended default is adopted from the start, because the failure it prevents is serious and its cost low. An earn-it component works but is costly, so a team adds it when its own experience shows the need. An open position has unsettled value, so a team tries it as an experiment that stays easy to remove. Together the standings form the confidence ladder of section 12.
+Each component carries one of three statuses. A recommended default is adopted from the start, because the failure it prevents is serious and its cost low. An earn-it component works but is costly, so a team adds it when its own experience shows the need. An open position has unsettled value, so a team tries it as an experiment that stays easy to remove. Together the statuses form the confidence ladder of section 12.
 
-Sections 4 to 9 follow the stages, with section 7 on the control plane. Section 10 covers the state spine and the supervisor's limits, and section 11 covers learning and the feedback spine. The walk starts with triage.
+Sections 4 to 9 follow the stages, with section 7 on the control plane. Section 10 covers saved state and the supervisor's limits, and section 11 covers learning and the feedback layer. The walk starts with triage.
 
 ## 4. Intent, triage and specification
 
@@ -196,7 +196,7 @@ A guard that fails open allows the action on a timeout or error, giving false co
 
 Each guard has a conformance probe, a deliberate attempt at the blocked action after every configuration change. Probes target predictable bypasses. A shell command can change a file and skip a guard that watches only the editor. One file can be reached under several names. A guard never registered never runs, and a missing setting may leave a permissive default. A guard may also fall back to a looser parse when it cannot split a command cleanly, and a scope recorded for an earlier plan may linger because nothing clears it. Several known bypasses need deliberate setup to exploit, so such guards mainly stop a careless or over-eager agent, not a determined one. When a rule must be bypassed, a named person grants a recorded, time-limited exception, so nobody silently switches the guard off.
 
-A disarmed control still looks like protection, so every control shows its state where operators look. An armed control blocks, as a passing probe proves. An advisory control only reports, and one that is off does not run. In one system read, nearly every feature flag shipped off, and a budget its documentation called a hard ceiling only computed a state and left enforcement to its callers.
+A control that is not enforcing still looks like protection, so every control shows its state where operators look. An enforcing control blocks, as a passing probe proves. An advisory control only reports, and one that is off does not run. In one system read, nearly every feature flag shipped off, and a budget its documentation called a hard ceiling only computed a state and left enforcement to its callers.
 
 Containment, which section 2 set apart from approval, answers prompt injection, which is not hypothetical. In one preprint study, injected instructions got two coding agents to run attacker-supplied commands in up to 84% of attempts, and a published proof of concept leaked private repository content after an agent read a malicious issue in a public repository. Three conditions together make a serious leak possible. The agent can read private data. It reads content an attacker could have written. And it can send information out. Removing any one closes that path to a leak, so every session lacks at least one, and each sees only one repository.
 
@@ -212,9 +212,9 @@ Controls limit what an agent can do, and section 8 asks whether what it did is r
 
 A finished unit arrives at verification. A thermometer that always reads normal is worse than none, and a test suite that passes broken code is the same instrument. Verification asks whether the checks can detect failure and whether the checker is independent.
 
-An oracle, whatever decides that work is correct, means something only if it would fail on wrong work. It fails when the answer leaks into the task, letting the agent see the expected result, or when the tests are too weak. In one study of a public benchmark, not yet peer reviewed, about a third of one agent's passing patches had the solution stated in the task, and about a third more were flagged as passing on weak tests; removing them cut its resolve rate from about 12.5% to about 4%. The author never alters its own checks, and a control protecting the tests must be verified as armed: in one system, the control meant to stop the coding agent editing tests shipped switched off. The checks are tested with seeded defects and mutation testing, which breaks code slightly to see whether tests notice.
+An oracle, whatever decides that work is correct, means something only if it would fail on wrong work. It fails when the answer leaks into the task, letting the agent see the expected result, or when the tests are too weak. In one study of a public benchmark, not yet peer reviewed, about a third of one agent's passing patches had the solution stated in the task, and about a third more were flagged as passing on weak tests; removing them cut its resolve rate from about 12.5% to about 4%. The author never alters its own checks, and a control protecting the tests must be verified as enforcing: in one system, the control meant to stop the coding agent editing tests shipped switched off. The checks are tested with seeded defects and mutation testing, which breaks code slightly to see whether tests notice.
 
-A failing twin is a copy of the change with one behavior the spec cares about removed. Tests that still pass on it are blind to that behavior. Twins target the behaviors the spec values most and the most common defects. A separate session without access to the code writes a test that fails on the twin, so the test cannot adapt to the code. Without a meaningful twin, a person reviews the tests.
+A known-bad copy is a copy of the change with one behavior the spec cares about removed. Tests that still pass on it are blind to that behavior. Known-bad copies target the behaviors the spec values most and the most common defects. A separate session without access to the code writes a test that fails on the copy, so the test cannot adapt to the code. Without a meaningful known-bad copy, a person reviews the tests.
 
 Reviewers start in a fresh context so they do not inherit the author's assumptions. A reviewer asked for problems will nearly always report some, so findings carry severities and the loop has a stop rule, or review never ends. No single reviewer catches everything, so the default pairs deterministic checks with one strong reviewer. No study has compared one strong reviewer with several lenses, and on one independent preprint benchmark of general code review the best system caught only about a third of known defects, while no independent precision figure was found for any commercial reviewer. Lenses, reviewers focused on one concern, are added only where recorded misses demand them. Code, not a model, collects every reviewer's findings for the verdict function below.
 
@@ -251,7 +251,7 @@ Approving every action can numb people until they stop reading. Attention belong
 
 The risk tier sets what each point demands and how strictly controls run. Rules compute it from the planned change surface and recheck it on the final diff, so a narrow plan cannot understate a change. A protected path forces the high tier. A change to a control takes at least the tier of what that control protects. A dependency change raises the tier. Anything unclassified is high. A model may raise a tier but never lower it.
 
-At the high tier, the owner approves the plan and reads the explainer, a summary for the reviewer, before the diff. A second engineer approves, and promotion is a separate step. Lower tiers may run some controls advisory, warning without blocking, but here every enforcing rule is armed. Guards on destructive actions are armed at every tier.
+At the high tier, the owner approves the plan and reads the explainer, a summary for the reviewer, before the diff. A second engineer approves, and promotion is a separate step. Lower tiers may run some controls advisory, warning without blocking, but here every rule meant to enforce is switched on. Guards on destructive actions are on at every tier.
 
 At the medium tier, the owner approves the plan and accepts the change.
 
@@ -273,7 +273,7 @@ All of this assumes the judged work survives crashes and restarts intact, which 
 
 ## 10. State, durability and cost
 
-A durable record beneath the stages lets work survive a crash. Every stage writes to this state spine. A crash can leave an outside action half done for a retry to repeat. Each effect needs a key that makes a retry harmless, as a payment key prevents double billing.
+A durable record beneath the stages lets work survive a crash. Every stage writes to this saved state. A crash can leave an outside action half done for a retry to repeat. Each effect needs a key that makes a retry harmless, as a payment key prevents double billing.
 
 Platforms that save progress across crashes do not make an outside effect safe to repeat. That job stays with the builder. Such a platform keeps a journal of completed steps. Replaying the journal skips the finished steps. Restarting the interrupted step instead repeats its effect. Replay suits agent work better but still needs keys.
 
@@ -283,7 +283,7 @@ Each effect gets an intent record before it happens and a done record, carrying 
 
 A slow session may also wake after another has taken its run. A lease is a time-limited claim naming the current owner. A fencing token rises with each new lease holder, so actions carrying an older token are rejected. Both matter only when several processes can own a run. Early on, a team can instead check before creating something whether it exists, such as an expected branch. It keeps intent and done records only where the target does not drop duplicates itself.
 
-Resume should fail loudly, as section 2's sixth axiom requires. On unrecognized state it stops and reports instead of guessing, which is how it fails closed. A dirty working tree, holding uncommitted changes, means something acted off the record. A damaged record, or a recorded commit no longer in the branch's history, means the record cannot be trusted. Two mismatches reroute the run instead of stopping it. A changed plan hash sends it back to planning, as section 5 says. A branch past the last recorded commit goes back through review, because the spine never saw that work. Starting fresh silently would hide each mismatch.
+Resume should fail loudly, as section 2's sixth axiom requires. On unrecognized state it stops and reports instead of guessing, which is how it fails closed. A dirty working tree, holding uncommitted changes, means something acted off the record. A damaged record, or a recorded commit no longer in the branch's history, means the record cannot be trusted. Two mismatches reroute the run instead of stopping it. A changed plan hash sends it back to planning, as section 5 says. A branch past the last recorded commit goes back through review, because the saved state never recorded that work. Starting fresh silently would hide each mismatch.
 
 Stored state is also a trust boundary. A later session with different trust will act on whatever a checkpoint, the saved state resume reads, contains. A checkpoint must therefore never hold an authority token, a credential or approval that grants power the reader was never given. Traces, journals and evaluation sets can hold personal data and secrets. Retention rules limit how long each is kept. Access rules limit who reads it. Redaction strips what is sensitive. A secret scan runs before another session reads them.
 
@@ -293,17 +293,17 @@ These records of what happened are also what learning builds on.
 
 ## 11. Observability, measurement and learning
 
-The feedback spine turns the records of section 10 into change, so each bad outcome alters practice. Without it, a system holds only untested beliefs. Its runtime loop acts on events as they happen. Its evaluation loop grades the system against tasks whose answers are known.
+The feedback layer turns the records of section 10 into change, so each bad outcome alters practice. Without it, a system holds only untested beliefs. Its runtime loop acts on events as they happen. Its evaluation loop grades the system against tasks whose answers are known.
 
 Each runtime event is a structured record whose failure class chooses the response. A transient failure, such as a timeout, is retried. A deterministic failure, which recurs identically, gets a drafted fix for a person to apply. A failure that needs a person, such as a missing credential, notifies someone and stops. Self-repair, resting on tracing, stays limited to retries and drafted fixes, and even that is an open position (section 12), since no system examined shows it working in practice.
 
 Faults often start in the plan or the brief, the task statement an agent receives. In one preprint study of 95 failed multi-agent runs, mostly outside coding and labeled by a model, the fault lay in the plan, the brief or the stopping rule in over half. Restoring the agent's state then replays the flaw, so repair revises the plan.
 
-A monitor must be armed, because an alert that can never fire protects nothing.
+A monitor must be live, because an alert that can never fire protects nothing.
 
 Having an evaluation is not having a trustworthy one. Scores must come from real runs and be recorded, and the judge, the model rating work, must agree with human opinion. The grader, whatever scores a run, should pass the reference answer when grading it against itself, but that sanity check is not a score. In one system, five of six recorded scores were such self-checks, so the record said nothing about the agent.
 
-Evaluation tasks should be private and drawn from the team's own reverts, fixes and incidents. The set starts small, and one vendor suggests 20 to 50 tasks drawn from real failures. A set that size reveals only large differences, so it is refreshed and grown. People read transcripts before trusting a score. Each task runs several times, since output varies. The grader deserves the agent's scrutiny: in one vendor's account, fixing grading bugs and ambiguous tasks raised its own model's score on a public benchmark of reproducing published research from 42% to 95%. A failing twin from section 8 that passes reveals a broken oracle, the check that decides correctness.
+Evaluation tasks should be private and drawn from the team's own reverts, fixes and incidents. The set starts small, and one vendor suggests 20 to 50 tasks drawn from real failures. A set that size reveals only large differences, so it is refreshed and grown. People read transcripts before trusting a score. Each task runs several times, since output varies. The grader deserves the agent's scrutiny: in one vendor's account, fixing grading bugs and ambiguous tasks raised its own model's score on a public benchmark of reproducing published research from 42% to 95%. A known-bad copy from section 8 that passes reveals a broken oracle, the check that decides correctness.
 
 Outcomes matter more than merge rate, which is easy to game. For quality, acceptance shows whether reviewers take a change, and rework rounds, the fixes before acceptance, show its cost. Reverts expose changes that looked right and were not. Post-merge incidents expose what review missed.
 
@@ -331,7 +331,7 @@ Sections 4 to 11 each built one component, and Figure 12.1 joins them into the r
 
 Earlier sections explain each stage. A rejected change returns through a capped fix round to execution. An accepted change meets the human gate for its risk tier, and a person or an explicit policy, never the author, merges it. The dashed line on the right carries learning back to the checks, because recurring findings become new checks.
 
-These components fall into the three standings of section 3. Unattended safety comes from guardrails rather than from parallelism. One builder of an unattended system said as much, though most of that system's limits were instructions to the model, and a guardrail kept only in a prompt is weaker than one in code. The recommended defaults are those guardrails, the axioms of section 2 put into practice, and a team should adopt them now.
+These components fall into the three statuses of section 3. Unattended safety comes from guardrails rather than from parallelism. One builder of an unattended system said as much, though most of that system's limits were instructions to the model, and a guardrail kept only in a prompt is weaker than one in code. The recommended defaults are those guardrails, the axioms of section 2 put into practice, and a team should adopt them now.
 
 The earn-it components add scale or structure, and a team adopts each once its own runs show it pays. A graph supervisor and many parallel sessions add scale. Stacked sequencing and the write guard of the plan lock add structure. Several review lenses and a design panel, a group that drafts competing plans for a chooser to pick from or merge, deepen scrutiny.
 
@@ -341,9 +341,9 @@ Adoption proceeds in four levels. Starting simple and limiting the blast radius 
 
 Level 0 contains and measures. One agent works in a sandbox on one repository, with minimum credentials and closed egress, and backups sit beyond its reach. A person reviews every change, and ordinary tests and lint run. The team moves up once a private eval of its own failures and an outcome log exist.
 
-Level 1 enforces. Guards fail closed, and probes confirm that each is armed. An effect journal records every external effect, so an uncertain resume stops loudly. Limits on spend, depth and fan-out arrive with a context budget. Triage and checkable specifications begin here. Small, low-risk work can now run under full review, while riskier work waits for Level 2. The team moves up once guards and journal run without silent failure.
+Level 1 enforces. Guards fail closed, and probes confirm that each is enforcing. An effect journal records every external effect, so an uncertain resume stops loudly. Limits on spend, depth and fan-out arrive with a context budget. Triage and checkable specifications begin here. Small, low-risk work can now run under full review, while riskier work waits for Level 2. The team moves up once guards and journal run without silent failure.
 
-Level 2 verifies and tiers. The sufficiency test arrives, and the plan lock's write guard, with its amendment path, enters on trial. Verification gains failing twins and one fresh-context reviewer, adding lenses only when misses show a need, and the computed verdict decides. Risk tiers with caps on change size follow. The team moves up once review wait is no longer the main constraint, with reverts, incidents and audits held steady as it fell.
+Level 2 verifies and tiers. The sufficiency test arrives, and the plan lock's write guard, with its amendment path, enters on trial. Verification gains known-bad copies and one fresh-context reviewer, adding lenses only when misses show a need, and the computed verdict decides. Risk tiers with caps on change size follow. The team moves up once review wait is no longer the main constraint, with reverts, incidents and audits held steady as it fell.
 
 Level 3 earns scale. Parallel sessions arrive, capped by the reviewers available. A graph supervisor, stacked sequencing and the open positions follow, each once runs show it pays. Every move up should rest on outcome records gathered over time, never on one before-and-after comparison.
 
@@ -353,16 +353,16 @@ Most recurring failures, or anti-patterns, are controls that read as stronger th
 
 | Anti-pattern | Principle it breaks | Where to look |
 |---|---|---|
-| A disarmed control that looks protective | Armed versus implemented | Conformance probes |
+| A control that looks protective but is not enforcing | Enforcing versus configured | Conformance probes |
 | A destructive-work freeze only in a prompt | Enforce in code | The list of guards |
 | Approval fatigue from per-action prompts | Attention is scarce | Approval rate |
-| The author editing tests it did not write | Independent checks | Test changes, failing twins |
+| The author editing tests it did not write | Independent checks | Test changes, known-bad copies |
 | A crash or warning-only cap treated as safe | Fail closed | Internal error count, spend past each cap |
 | Summary handoffs, thick always-loaded instructions | Context is a budget | Context cost per session |
 | Fan-out without independent units | Start simple | Conflict rate, review queue |
 | A resume that starts fresh or replays effects | Loud, idempotent resume | Intents with no done record |
 | Merge rate as the quality signal | Measure outcomes | Reverts and incidents by tier |
-| An advisory estimate labeled as a hard cap | Armed versus implemented | What happens when the limit is reached |
+| An advisory estimate labeled as a hard cap | Enforcing versus configured | What happens when the limit is reached |
 | Review skipped as load grows | Attention is scarce | Changes merged without review |
 | Full ceremony on a small change | Start simple | Process effort against change size |
 
@@ -372,7 +372,7 @@ How firmly each of these recommendations is known varies, and section 13 says wh
 
 Not every recommendation in this paper is equally settled, and this section separates the firm from the open. Most outside evidence is vendor claims, product documentation or practitioner accounts. The measured studies are few, several are preprints, and one rests mostly on non-coding tasks. The firmest ground lies under guidance that records costly failures. Enforcing rules in code stands there, and so does the rule that approval alone is no defense. Independent verification and human gates at judgment points stand there too. So do effects that are safe to repeat and controls that fail closed.
 
-The first six axioms of section 2, from enforcement in code through idempotent effects, are well supported in their core claims, with two qualifications. Some frameworks favor explicit graphs over starting simple, and the case for treating review as the binding constraint rests mostly on vendor telemetry and surveys. The last two, on judging a system by private tasks and on limiting the blast radius, are firmer in what they reject than in what they prescribe. They clearly rule out public benchmarks and approval alone as a defense, which audits and attack studies have measured. The replacements, private tasks with outcome records and contained sessions, rest on vendor and industry guidance rather than measurement, so they are less settled. The standings of section 3 follow the same order. The recommended defaults are settled, while the components that must earn their place lack a comparison showing how much they help. The open positions are the least settled.
+The first six axioms of section 2, from enforcement in code through idempotent effects, are well supported in their core claims, with two qualifications. Some frameworks favor explicit graphs over starting simple, and the case for treating review as the binding constraint rests mostly on vendor telemetry and surveys. The last two, on judging a system by private tasks and on limiting the blast radius, are firmer in what they reject than in what they prescribe. They clearly rule out public benchmarks and approval alone as a defense, which audits and attack studies have measured. The replacements, private tasks with outcome records and contained sessions, rest on vendor and industry guidance rather than measurement, so they are less settled. The statuses of section 3 follow the same order. The recommended defaults are settled, while the components that must earn their place lack a comparison showing how much they help. The open positions are the least settled.
 
 Three questions about review remain open. The first is how often review comments are correct on everyday changes rather than selected examples, since no independent precision figure exists. Even recall varies widely from one benchmark to another, both above and below section 8's figure. The second is how much each review lens adds. The third is what a review costs. The components that most distinguish this design are the least tested. Their field evidence is thin: a single multi-unit run inferred from its still-unmerged pull requests, about six weeks of review timing from one system, and an evaluation apparatus with no recorded scores. A team should therefore confirm by testing that each control works in its own system, rather than assume it works because it is configured.
 
