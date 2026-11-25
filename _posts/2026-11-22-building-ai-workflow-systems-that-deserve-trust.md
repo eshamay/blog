@@ -23,11 +23,11 @@ A session is one run of the loop. The model sees only its context window, the fi
 
 An agent can produce a plausible pull request in minutes, so the hard part has moved to checking changes. Checking needs an oracle, whatever decides that the work is correct. A test suite is the familiar oracle, and a type checker or reviewer also serves. Without one, an agent cannot tell finished work from work that merely looks finished.
 
-Agents run unattended, with nobody watching, and many at once. Reviewers do not multiply that way, and every change still needs a person who understands it. When output outgrows review capacity, changes queue, grow larger and are read less carefully, so more defects reach shared code. Faster production therefore does not make delivery reliable, because review capacity sets the pace.
+Agents run unattended, with nobody watching, and many at once. Reviewers do not multiply that way, and every change still needs a person accountable for it, though for the lowest-risk work a rule set in advance may accept it while people sample its decisions. When output outgrows review capacity, changes queue, grow larger and are read less carefully, so more defects reach shared code. Faster production therefore does not make delivery reliable, because review capacity sets the pace.
 
 A skilled contractor still works from drawings, under a permit and with an inspector, because skill does not replace process. A workflow is that process applied to an agent's work. A workflow system keeps it intact when nobody is watching. It consists of the runtime that runs the work, the controls that limit it and the records of what happened.
 
-Two kinds of control carry the most weight. The first is deterministic enforcement, rules that code applies whatever the model decides. Its usual tool is a hook, code the harness runs at a fixed point, such as before a shell command, that can allow, question or refuse the action. A rule kept only in a prompt can be outweighed or lost to compaction, while a hook applies every time. The second is the human gate, a point where a person decides before work proceeds. Human gates belong at judgment calls, the decisions that need a person's grasp of purpose or risk. Placed at every step, they use up the attention those decisions need, and people soon approve without reading. Section 2 states where each control belongs.
+Two kinds of control carry the most weight. The first is deterministic enforcement, rules that code applies whatever the model decides. Its usual tool is a hook, code the harness runs at a fixed point, such as before a shell command, that can allow, question or refuse the action. A rule kept only in a prompt can be outweighed or lost to compaction, while a hook applies on every call it matches once it is registered, set to block when it fails and tested. The second is the human gate, a point where a person decides before work proceeds. Human gates belong at judgment calls, the decisions that need a person's grasp of purpose or risk. Placed at every step, they use up the attention those decisions need, and people soon approve without reading. Section 2 states where each control belongs.
 
 **Figure 1.1. From the scope of the paper to the single agent and the workflow system built around it.**
 
@@ -53,7 +53,7 @@ Section 1 ended by asking where each control belongs. The eight axioms below ans
 
 **Axiom 8: limit the blast radius through isolation and least privilege.** The blast radius is everything a session could damage if it goes wrong. Isolation runs each session apart inside a sandbox, a boundary on what it can touch. Least privilege gives it only the credentials its task needs.
 
-Prompt injection hides instructions in untrusted content, text from outside the operator, the person or team who runs the agent. An agent cannot reliably tell such text from real instructions and may obey it. Approval does not help, because a tricked agent with approval rights still acts on everything it can reach. Containment, limiting that reach, is what holds. Section 7 applies it.
+Prompt injection hides instructions in untrusted content, text from outside the operator, the person or team who runs the agent. An agent cannot reliably tell such text from real instructions and may obey it. Approval alone does not contain it, because a tricked agent still acts on everything it can reach. Containment, limiting that reach, is what holds. Section 7 applies it.
 
 ### Corollaries
 Three corollaries turn the axioms into habits. The first is to **fail closed**, treating an error, a timeout or an unknown state as a refusal. A control that opens when broken fails exactly when it is needed.
@@ -76,13 +76,13 @@ Triage decides whether a task suits an agent and how much process it deserves. S
 
 Execution runs one loop per unit of work, the piece of the plan one session carries to a change. Each unit has an isolated workspace, its own checkout and branch, so units never collide. Verification runs deterministic checks, then fresh-context reviewers who start without the author's assumptions, and a fixed rule turns their findings into a verdict. The human gate places a person wherever the risk tier, a class computed from what a change touches, calls for one. Learning changes the system so a failure is not repeated. The cheapest checks come first, so a person sees only work that has already passed them.
 
-The control plane is a set of rules that watches every stage instead of belonging to one, because a dangerous action can happen anywhere. It is enforced in code and fails closed. Its layers run from prevention to recovery, as section 7 develops. Guards, code that blocks a dangerous action as it is attempted, belong to it.
+The control plane is a set of rules that watches every stage instead of belonging to one, because a dangerous action can happen anywhere. It is enforced in code and must be configured to fail closed, since many hooks fail open on a timeout or error by default. Its layers run from prevention to recovery, as section 7 develops. Guards, code that blocks a dangerous action as it is attempted, belong to it.
 
 The state spine keeps what must survive a crash outside the conversation transcript, which compaction erodes, and away from loose files and labels, so work resumes instead of restarting. The feedback spine feeds events, evaluations, and outcome records back into checks.
 
 The supervisor starts sessions and sequences units, and it holds spending caps across resumes so a restart cannot reset them. By default it runs one agent on one unit at a time. A graph supervisor, which picks the next session at run time, is harder to predict and resume, so it waits for a clear need.
 
-Separation of duties means no party approves its own work, so whoever does the work never also checks, accepts or merges it. This gives structure to the axiom that an author cannot weaken its own checks, as section 9 shows.
+Separation of duties means no party approves its own work, so the agent that does the work never gives the final check, acceptance or merge, and at the high tier a second person approves as well. This gives structure to the axiom that an author cannot weaken its own checks, as section 9 shows.
 
 Each component carries one of three standings. A recommended default is adopted from the start, because the failure it prevents is serious and its cost low. An earn-it component works but is costly, so a team adds it when its own experience shows the need. An open position has unsettled value, so a team tries it as an experiment that stays easy to remove. Together the standings form the confidence ladder of section 12.
 
@@ -122,15 +122,15 @@ Planning turns an accepted spec into an agreed plan through three steps. It test
 
 The sufficiency test asks whether proceeding would make the agent invent missing information. If so, the question is blocking, and work halts until the owner answers and the spec is updated. If not, it is a preference the agent decides and records. As a backstop, any question touching compliance, security or data retention always blocks, because a wrong guess there costs too much.
 
-At approval the workflow records the plan hash, a fingerprint of its exact text, so approval covers precisely what the owner read. A resumed run whose hash no longer matches returns to planning. A separate check flags any edit not recorded as a new version. Both are the default.
+At approval the workflow records the plan hash, a fingerprint of its exact text, so approval covers precisely what the owner read. A resumed run whose hash no longer matches returns to planning. A separate check flags any edit not recorded as a new version. Both are the default. None of the public products examined binds plan approval to a hash, so this default is the paper's own position.
 
-A team can go further and turn the plan's file list into a write guard, a rule in code that blocks writes outside the plan's change surface, the set of files the plan may touch. The guard is tuned not to get in the way. It blocks outright only paths the organization marks as protected. It lets generated files and dependency lock files through, since legitimate work changes them. Any other out-of-plan write becomes an amendment request.
+A team can go further, once its own runs show the need, and turn the plan's file list into a write guard, a rule in code that blocks writes outside the plan's change surface, the set of files the plan may touch. The guard is tuned not to get in the way. It blocks outright only paths the organization marks as protected. It lets generated files and dependency lock files through, since legitimate work changes them. Any other out-of-plan write becomes an amendment request.
 
-A frozen plan fails because discovery changes the design. Reworking it, even by a supervisor mid-run, leaves no approved, versioned record. An amendment is a new version that states its reason and leaves a visible mark in the change. The owner approves it, and the write guard follows. Limits on amendments, such as never reaching into protected paths, must be enforced by the guard, because a limit written only in prose is advice.
+A frozen plan fails because discovery changes the design. Reworking it, even by a supervisor mid-run, leaves no approved, versioned record. An amendment is a new version that states its reason and leaves a visible mark in the change. The owner approves it, and the write guard follows. Limits on amendments, such as never reaching into protected paths, must be enforced by the guard, because a limit written only in prose is advice. Together the hash-bound approval and the write guard form the plan lock. The hash binding is a default, while the write guard must earn its place.
 
 Unattended agents fail in two opposite ways. Some stall on questions nobody can answer, while others push through questions they should have asked. Before any fallback, the agent asks whether a question is a missing requirement or could destroy data, and if so, work stops for the owner. Compliance questions count as missing requirements, and the code guards of section 7 also stop destructive actions.
 
-Other questions climb a decision ladder, one rung at a time, as Figure 5.1 shows.
+Other questions climb a decision ladder, an open position, one rung at a time, as Figure 5.1 shows.
 
 **Figure 5.1. The decision ladder**
 
@@ -146,7 +146,7 @@ The unattended path fails closed. A question meant for an absent owner is refuse
 
 Every unattended or deferred decision becomes a record that travels with the change. A decision record states the question and the answer, so a reviewer can judge it. Its rung shows how the answer was found. Its confidence tells the reviewer where to look hardest, and its dissent keeps disagreement visible.
 
-A deferral is an item postponed rather than settled. Its record names the item, why it waits and its owner. It also names a revisit trigger, the date or event that reopens it. A register of these records becomes a graveyard unless each trigger fires. A team should adopt one only when deferred items are otherwise lost.
+A deferral is an item postponed rather than settled. Its record names the item, why it waits and its owner. It also names a revisit trigger, the date or event that reopens it. A register of these records becomes a graveyard unless each trigger fires. A register is an open position, so a team should adopt one only when deferred items are otherwise lost.
 
 With the plan approved and its decisions on record, execution begins.
 
@@ -162,7 +162,7 @@ The second condition is cost, so the time saved must justify the extra tokens.
 
 The last is absorption. Concurrency should follow review capacity rather than machine capacity, because unreviewed changes queue and go stale. A fixed session limit, set in section 10, caps the worst case without replacing this judgment.
 
-A unit that builds on an earlier one starts, by default, after that one merges. If the earlier unit changes meanwhile, the later one is marked stale, rebased by replaying its changes onto the new version, and verified again. A stacked change instead branches from the earlier branch, so its pull request shows only its own changes, and the stack merges bottom up. Stacking the units of one planned change is a sound default, while stacking across several changes planned together must earn its place.
+A unit that builds on an earlier one starts, by default, after that one merges. If the earlier unit changes meanwhile, the later one is marked stale, rebased by replaying its changes onto the new version, and verified again. A stacked change instead branches from the earlier branch, so its pull request shows only its own changes, and the stack merges bottom up. Stacking, whether within one planned change or across several planned together, must earn its place.
 
 A dependent session begins with a structured handoff, because a prose summary drops decisions and constraints the successor must respect. The handoff carries the earlier unit's decision records, amendments and deferrals. It also carries the effect journal, which records each external effect the unit caused, and a path to its full trace.
 
@@ -192,7 +192,7 @@ Code must stop the most destructive actions. The first is a forced push, which r
 
 The best guard acts early and says why it refused, so the agent picks a safer route. Behind it stands a permission backstop, such as a database role that cannot drop shared tables. Matching command strings catches accidents, but a determined or injected agent can rephrase the command. A shared stateful environment counts as production, because damage there reaches others.
 
-A guard that fails open allows the action on a timeout or error, giving false comfort under load, so guards fail closed. No hook is assumed to stop an action. Where one cannot fail closed, branch protection or a wrapper with its own timeout enforces the rule. An automatic reviewer, a model that judges whether each action is safe, denies whenever its own review fails. It helps as an extra layer but cannot stand alone, since it misses a meaningful share of actions beyond what was asked.
+A guard that fails open allows the action on a timeout or error, giving false comfort under load, so guards fail closed. No hook is assumed to stop an action, since a block-on-failure setting covers only some hook types and events, and the uncovered ones are listed. Failing closed has a cost, so a transient error is retried before it counts as a refusal. Where one cannot fail closed, branch protection or a wrapper with its own timeout enforces the rule. An automatic reviewer, a model that judges whether each action is safe, denies whenever its own review fails. It helps as an extra layer but cannot stand alone, since it misses a meaningful share of actions beyond what was asked.
 
 Each guard has a conformance probe, a deliberate attempt at the blocked action after every configuration change. Probes target predictable bypasses. A shell command can change a file and skip a guard that watches only the editor. One file can be reached under several names. A guard never registered never runs, and a missing setting may leave a permissive default. When a rule must be bypassed, a named person grants a recorded, time-limited exception, so nobody silently switches the guard off.
 
@@ -200,7 +200,7 @@ A disarmed control still looks like protection, so every control shows its state
 
 Containment, which section 2 set apart from approval, answers prompt injection. Three conditions together make a serious leak possible. The agent can read private data. It reads content an attacker could have written. And it can send information out. Removing any one breaks the attack, so every session lacks at least one, and each sees only one repository.
 
-A sandbox does not filter network traffic, so outbound traffic is limited to a short approved list. The usual exception is a package mirror, a controlled copy of the dependency registry. It must never forward other requests, or stolen data could leave inside the names requested. Continuous integration runs on agent branches without deployment secrets, and reviewer sessions that read pull-request text face injection too.
+A virtualization boundary alone does not filter network traffic, so outbound traffic is limited to a short approved list. The usual exception is a package mirror, a controlled copy of the dependency registry. It must never forward other requests, or stolen data could leave inside the names requested. Continuous integration runs on agent branches without deployment secrets, and reviewer sessions that read pull-request text face injection too.
 
 Credentials should be as narrow as the task allows, because an attacker who steers the agent can do whatever it can. The agent pushes only to its own branch and holds no raw credential. Organization policy outranks the repository, so no team quietly loosens its rules. No committed file may switch on a permissive mode, or any pull request could widen permissions. Least agency extends this to tools, so an agent gets only the tools its task needs, each with its own narrow permission.
 
@@ -325,11 +325,11 @@ Sections 4 to 11 each built one component, and Figure 12.1 joins them into the r
 
 ![Figure 12.1. The reference process: a request moves from triage through specification, planning, execution, verification and the human gate to merge and learning, with exits for unsuited work, invented requirements and stuck loops, and loops for rejection and learning]({{ "/assets/img/figure-12-1-the-reference-process.png" | relative_url }})
 
-Earlier sections explain each stage. A rejected change returns through a capped fix round to execution. An accepted change meets the human gate for its risk tier, and a person or an explicit policy, never the author, merges it. The line on the left carries learning back to the checks, because recurring findings become new checks.
+Earlier sections explain each stage. A rejected change returns through a capped fix round to execution. An accepted change meets the human gate for its risk tier, and a person or an explicit policy, never the author, merges it. The dashed line on the right carries learning back to the checks, because recurring findings become new checks.
 
 These components fall into the three standings of section 3. Unattended safety comes from guardrails rather than from parallelism, and a guardrail kept only in a prompt is weaker than one in code. The recommended defaults are those guardrails, the axioms of section 2 put into practice, and a team should adopt them now.
 
-The earn-it components add scale or structure, and a team adopts each once its own runs show it pays. A graph supervisor and many parallel sessions add scale. Stacked sequencing and the plan lock add structure. Several review lenses and a design panel, a group that reads a plan before work begins, deepen scrutiny.
+The earn-it components add scale or structure, and a team adopts each once its own runs show it pays. A graph supervisor and many parallel sessions add scale. Stacked sequencing and the write guard of the plan lock add structure. Several review lenses and a design panel, a group that reads a plan before work begins, deepen scrutiny.
 
 The open positions are worth trying, but their value is unsettled. They begin with the decision ladder of section 5 and the deferral register. A way to trace a change to its origin when no tracker item exists is another. The refusing cap and self-repair limited to retries and drafted fixes complete them.
 
@@ -339,7 +339,7 @@ Level 0 contains and measures. One agent works in a sandbox on one repository, w
 
 Level 1 enforces. Guards fail closed, and probes confirm that each is armed. An effect journal records every external effect, so an uncertain resume stops loudly. Limits on spend, depth and fan-out arrive with a context budget. Triage and checkable specifications begin here. Small, low-risk work can now run under full review, while riskier work waits for Level 2. The team moves up once guards and journal run without silent failure.
 
-Level 2 verifies and tiers. The sufficiency test arrives, and the plan lock with its amendment path enters on trial. Verification gains failing twins and one fresh-context reviewer, adding lenses only when misses show a need, and the computed verdict decides. Risk tiers with caps on change size follow. The team moves up when review wait is the main constraint and reverts, incidents and audits held steady as it fell.
+Level 2 verifies and tiers. The sufficiency test arrives, and the plan lock's write guard, with its amendment path, enters on trial. Verification gains failing twins and one fresh-context reviewer, adding lenses only when misses show a need, and the computed verdict decides. Risk tiers with caps on change size follow. The team moves up once review wait is no longer the main constraint, with reverts, incidents and audits held steady as it fell.
 
 Level 3 earns scale. Parallel sessions arrive, capped by the reviewers available. A graph supervisor, stacked sequencing and the open positions follow, each once runs show it pays. Every move up should rest on outcome records gathered over time, never on one before-and-after comparison.
 
@@ -363,15 +363,15 @@ How firmly each of these recommendations is known varies, and section 13 says wh
 
 ## 13. Limits of the evidence and open questions
 
-Not every recommendation in this paper is equally settled, and this section separates the firm from the open. The firmest ground lies under guidance that records costly failures. Enforcing rules in code stands there, and so does containment. Independent verification and human gates at judgment points stand there too. So do effects that are safe to repeat and controls that fail closed.
+Not every recommendation in this paper is equally settled, and this section separates the firm from the open. The firmest ground lies under guidance that records costly failures. Enforcing rules in code stands there, and so does the rule that approval alone is no defense. Independent verification and human gates at judgment points stand there too. So do effects that are safe to repeat and controls that fail closed.
 
-The first six axioms of section 2, from enforcement in code through idempotent effects, are settled in their core claims. The last two, on judging a system by private tasks and on limiting the blast radius, are firmer in what they reject than in what they prescribe. They clearly rule out public benchmarks and approval as a defense, but leave the exact replacement less settled. The standings of section 3 follow the same order. The recommended defaults are settled, while the components that must earn their place lack a comparison showing how much they help. The open positions are the least settled.
+The first six axioms of section 2, from enforcement in code through idempotent effects, are settled in their core claims. The last two, on judging a system by private tasks and on limiting the blast radius, are firmer in what they reject than in what they prescribe. They clearly rule out public benchmarks and approval alone as a defense, but leave the exact replacement less settled. The standings of section 3 follow the same order. The recommended defaults are settled, while the components that must earn their place lack a comparison showing how much they help. The open positions are the least settled.
 
 Three questions about review remain open. The first is how often review comments are correct on everyday changes rather than selected examples. The second is how much each review lens adds. The third is what a review costs. The components that most distinguish this design are the least tested, so a team should confirm by testing that each control works in its own system, rather than assume it works because it is configured.
 
-Each component that must earn its place has a test. Several review lenses, each looking for one kind of defect, pay only if the extra lenses find what a strong reviewer misses at a worthwhile cost. Design panels answer to the same test. The plan lock of section 5 is worth keeping if it reduces drift without adding rework. Parallel sessions under a graph supervisor, and stacking of many units, are justified only once review is no longer the constraint.
+Each component that must earn its place has a test. Several review lenses, each looking for one kind of defect, pay only if the extra lenses find what a strong reviewer misses at a worthwhile cost. Design panels answer to the same test. The write guard of section 5's plan lock is worth keeping if it reduces drift without adding rework. Parallel sessions under a graph supervisor, and stacking of many units, are justified only once review is no longer the constraint.
 
 Among the open positions, the decision ladder should be revised if flagged decisions are reversed so often that asking would have been cheaper. A refusing cap, which blocks new work at its spending limit instead of warning, is confirmed when it stops a runaway and revised if it refuses legitimate work too often. The deferral register earns its keep if deferred items return rather than vanish. Traceability without a tracker earns its keep if each change still leads back to its request. Self-repair should grow beyond simple retries only where its repairs hold. Acceptance by policy remains an organizational choice, informed by incident and revert rates in each risk tier.
 
-A team's own work soon settles parallel sessions and risk tiers. Lenses, the lock, the ladder and caps matter too rarely to judge without many runs. An open component should be adopted deliberately, measured, and kept removable. An open position is not a weak one. It marks where a builder should measure first.
+A team's own work soon settles parallel sessions and risk tiers. Lenses, the write guard, the ladder and caps matter too rarely to judge without many runs. An open component should be adopted deliberately, measured, and kept removable. An open position is not a weak one. It marks where a builder should measure first.
 
